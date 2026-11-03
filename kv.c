@@ -4,25 +4,39 @@
 #include <assert.h>
 /* Your implementation here! */
 
-struct kv {
+struct kv_entries {
 	/* your struct fields here */
 	unsigned long key;
 	void *value;
-	void **prev;
+
 };
 
-struct kv *store;
+struct kv{
+	struct kv_entries *entries;
+	size_t size;
+	size_t capacity;
+};
+
+//struct kv *store;
 
 struct kv *kv_create(void){
 	printf("WAAAAAAAAAAAAAAAATHTTHAAAAAAP\n");
 
 	printf("root is empty\n");
+
 	struct kv *store = malloc(sizeof(struct kv));
+
 	if(store == NULL){
 		return NULL;
 	}
-	store->value = NULL;
-	store->prev = NULL;
+
+	store->entries = malloc(sizeof(struct kv_entries));
+	if(store->entries == NULL){
+		return NULL;
+	}
+
+	store->size = 0;
+	store->capacity = 8;
 
 	return store;
 };
@@ -33,8 +47,16 @@ void kv_destroy(struct kv *store){
 	if(store == NULL){
 		return;
 	}
-	free(store->value);
-	free(store->prev);
+
+	size_t SIZE = store->size;
+	for(size_t i = 0; i < SIZE; i++){
+		free((store->entries[i]));
+	}
+	//store->key = NULL;
+	store->size = 0;
+	store->capacity = 8;
+	
+	//free(store->entries);
 	free(store);
 
 	return;
@@ -44,7 +66,7 @@ void kv_destroy(struct kv *store){
 
 void *kv_get(struct kv *store, unsigned long key){
 	if(!store){
-		return;
+		return NULL;
 	}
 
 	assert(store);
@@ -59,7 +81,7 @@ int kv_put(struct kv *store, unsigned long key, void *value, void **prev){
 	if(!value || !prev){
 		return 0;
 	}
-	struct kv *kv_entry = *bsearch(&key, *store, )
+	//struct kv *kv_entry = *bsearch(&key, *store, )
 	assert(store);
 	assert(value);
 	assert(prev);
