@@ -8,7 +8,7 @@ struct kv_entries {
 	/* your struct fields here */
 	unsigned long key;
 	void *value;
-	void *prev;
+	//void *prev;
 
 };
 
@@ -28,14 +28,10 @@ struct kv *kv_create(void){
 
 	struct kv *store = malloc(sizeof(struct kv));
 
-	if(store == NULL){
-		return NULL;
-	}
+	assert(store);
 
-	store->entries = malloc(sizeof(struct kv_entries));
-	if(store->entries == NULL){
-		return NULL;
-	}
+	store->entries = malloc(8 * sizeof(struct kv_entries));
+	assert(store->entries);
 
 	store->size = 0;
 	store->capacity = 8;
@@ -80,22 +76,38 @@ void *kv_get(struct kv *store, unsigned long key){
 	}
 
 	struct kv_entries *kv_pair = bsearch(&key, store->entries, store->size, sizeof(struct kv_entries), compare);
-	if(!kv_pair){
+	if(kv_pair == NULL){
 		return NULL;
-	}
+	};
 	return kv_pair->value;
 }
 
 int kv_put(struct kv *store, unsigned long key, void *value, void **prev){
+	assert(key);
 	if(!store || !value){
 		return 0;
 	}
+
+	struct kv_entries *kv_pair = bsearch(&key, store->entries, store->size, sizeof(struct kv_entries), compare);
 	
+	//assert(kv_pair);
+	if(kv_pair){
+		*prev = kv_pair->value;
+		kv_pair->value = value;
+		return 0;
+	}
+
+	if(store->size == (store->capacity) - 1){
+		store->entries = realloc(store->entries, (store->capacity + 8) * sizeof(struct kv_entries));
+		assert(store->entries);
+		store->capacity += 8;
+	}
 	
-	//struct kv *kv_entry = *bsearch(&key, *store, )
-	assert(store);
-	assert(value);
-	assert(prev);
-	if(key == 0) return 0;
+	struct kv_entries *new_entry = &(store->entries[store->size]);
+	new_entry->key = key;
+	new_entry->value = value; 
+
+
+	(store->size)++;
 	return 0;
 }
