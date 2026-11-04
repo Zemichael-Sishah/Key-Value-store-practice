@@ -17,15 +17,7 @@ struct kv{
 	size_t size;
 	size_t capacity;
 };
-int compare(int a, int b){
-	if(a<b){
-		return -1;
-	}
-	else if(a>b){
-		return 1;
-	}
-	return 0;
-}
+
 
 //struct kv *store;
 
@@ -73,18 +65,25 @@ void kv_destroy(struct kv *store){
 
 }
 
+int compare( const void *a, const void *b){
+	struct kv_entries *kv1 = (struct kv_entries *)a;
+	struct kv_entries *kv2 = (struct kv_entries *)b;
+
+	if(kv1->key > kv2->key) return 1;
+	else if (kv1->key < kv2->key) return -1;
+	return 0;
+}
 
 void *kv_get(struct kv *store, unsigned long key){
 	if(!store || !store->entries){
 		return NULL;
 	}
 
-	//void *value = bsearch(key, store->entries, store->size, sizeof(kv_entries), compare);
-	if(!key){
+	struct kv_entries *kv_pair = bsearch(&key, store->entries, store->size, sizeof(struct kv_entries), compare);
+	if(!kv_pair){
 		return NULL;
 	}
-	//return *value;
-	return NULL;
+	return kv_pair->value;
 }
 
 int kv_put(struct kv *store, unsigned long key, void *value, void **prev){
