@@ -82,7 +82,7 @@ void *kv_get(struct kv *store, unsigned long key){
 		return NULL;
 	};
 
-	printf("\nkv_pair is not null\n");
+	//printf("\nkv_pair is not null\n");
 	return kv_pair->value;
 }
 
@@ -98,12 +98,17 @@ int kv_put(struct kv *store, unsigned long key, void *value, void **prev){
 	
 	//assert(kv_pair);
 	if(kv_pair){
-		*prev = strdup((char *)(&(kv_pair->value)));
-		kv_pair->value = strdup((char *)value);
-		if(prev == NULL){
-			return -2;
+		if(*prev != NULL){
 		}
-		return 0;
+		else{
+			*prev = strdup((char *)(&(kv_pair->value)));
+			kv_pair->value = strdup((char *)value);
+			if(prev == NULL){
+				return -2;
+			}
+			return 0;
+		}
+		
 	}
 
 	*prev = NULL;
