@@ -23,9 +23,9 @@ struct kv{
 //struct kv *store;
 
 struct kv *kv_create(void){
-	printf("WAAAAAAAAAAAAAAAATHTTHAAAAAAP\n");
+	//printf("WAAAAAAAAAAAAAAAATHTTHAAAAAAP\n");
 
-	printf("root is empty\n");
+	//printf("root is empty\n");
 
 	struct kv *store = malloc(sizeof(struct kv));
 
@@ -42,7 +42,7 @@ struct kv *kv_create(void){
 
 
 void kv_destroy(struct kv *store){
-	printf("BYEEEE\n");
+	//printf("BYEEEE\n");
 	if(store == NULL){
 		return;
 	}
@@ -50,13 +50,16 @@ void kv_destroy(struct kv *store){
 	size_t SIZE = store->size;
 	for(size_t i = 0; i < SIZE; i++){
 		free(store->entries[i].value);
+		store->entries[i].value = NULL;
 	}
 	//store->key = NULL;
 	store->size = 0;
 	store->capacity = 0;
 	
 	free(store->entries);
+	store->entries = NULL;
 	free(store);
+	store = NULL;
 
 	return;
 
@@ -92,22 +95,22 @@ int kv_put(struct kv *store, unsigned long key, void *value, void **prev){
 		return -2;
 	}
 
+	//printf("we in put\n");
 	
 
 	struct kv_entries *kv_pair = bsearch(&key, store->entries, store->size, sizeof(struct kv_entries), compare);
-	
+
 	//assert(kv_pair);
 	if(kv_pair){
-		if(*prev != NULL){
+		
+		*prev = kv_pair->value;
+		kv_pair->value = value;	
+		
+		if(*prev == NULL){
+			return -2;
 		}
-		else{
-			*prev = strdup((char *)(&(kv_pair->value)));
-			kv_pair->value = strdup((char *)value);
-			if(prev == NULL){
-				return -2;
-			}
-			return 0;
-		}
+
+		return 0;
 		
 	}
 
